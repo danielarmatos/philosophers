@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 20:00:55 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/16 20:06:45 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/20 20:15:11 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,4 +57,14 @@ int	check_if_digit(char **arr)
 		i++;
 	}
 	return (1);
+}
+
+int	get_timestamp()
+{
+	int				timestamp;
+	struct timeval	current_time;
+
+	gettimeofday(&current_time, NULL);
+	timestamp = (current_time.tv_sec * 1000000 + current_time.tv_usec);
+	return (timestamp * 0.001);
 }

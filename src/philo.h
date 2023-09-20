@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:18 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/19 20:09:56 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/20 19:15:13 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,11 @@
 # include <sys/time.h>
 # include <stdbool.h>
 
+#  define EATING 1
+#  define SLEEPING 2
+#  define THINKING 3
+#  define DEAD 4
+
 typedef struct s_fork
 {
 	int				id;
@@ -31,6 +36,8 @@ typedef struct s_philo
 {
 	int				id;
 	int				meals_eaten;
+	int				status;
+	int				time_to_die;
 	t_fork			*r_fork;
 	t_fork			*l_fork;
 	pthread_t		thread;
@@ -49,7 +56,7 @@ typedef struct s_data
 	t_philo			**philos;
 	t_fork			**forks;
 	pthread_mutex_t	m_print;
-	pthread_mutex_t	m_start_time;
+	//pthread_mutex_t	m_start_time;
 	pthread_mutex_t	m_dead;
 	pthread_mutex_t	m_curr_id;
 }		t_data;
@@ -57,6 +64,7 @@ typedef struct s_data
 // Utils:
 int		check_if_digit(char **arr);
 int		ft_atoi(const char *str);
+int		get_timestamp();
 
 // Init:
 void	init_data(t_data *data, char **argv);
