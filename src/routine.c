@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 19:06:51 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/26 18:35:27 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/26 19:59:11 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,11 @@ void	print_message(t_data *data, int p_index, int message_id)
 
 	pthread_mutex_lock(&data->m_dead);
 	if (check_if_dead(data) == true)
+	{
+		pthread_mutex_unlock(&data->m_dead);
 		return ;
+	}
+
 	timestamp = (get_timestamp(data));
 	pthread_mutex_lock(&data->m_print);
 	if (message_id == 0)
@@ -68,26 +72,23 @@ void	p_die(t_data *data, int p_index)
 void	p_sleep(t_data *data, int p_index)
 {
 	unsigned int	sleep_time;
+	unsigned int	timestamp;
 
-	if ((unsigned int)get_timestamp(data) >= data->philos[p_index]->time_to_die)
+	timestamp = get_timestamp(data);
+	if (timestamp >= data->philos[p_index]->time_to_die)
 		p_die(data, p_index);
 	else
 	{
 		if (data->philos[p_index]->status != DEAD)
 		{
-			sleep_time = get_timestamp(data) + data->time_sleep;
-		//	printf("sleep: %i %i %u\n", get_timestamp(data), data->time_sleep, sleep_time);
+			sleep_time = timestamp + data->time_sleep;
 			print_message(data, p_index, 2);
 			data->philos[p_index]->status = SLEEPING;
-			//printf("sleeping: %u, %i\n", data->philos[p_index]->time_to_die, get_timestamp(data));
-		//	printf("here: %u %u\n", sleep_time, data->philos[p_index]->time_to_die);
 			if (sleep_time < data->philos[p_index]->time_to_die)
 				usleep(data->time_sleep * 1000);
 			else
 			{
-				sleep_time = data->philos[p_index]->time_to_die - get_timestamp(data);
-				//printf("Will die while sleeping\n");
-				//printf("here: %i\n", data->philos[p_index]->time_to_die - get_timestamp(data));
+				sleep_time = data->philos[p_index]->time_to_die - timestamp;
 				usleep(sleep_time * 1000);
 				p_die(data, p_index);
 			}
@@ -114,22 +115,20 @@ void	p_eat_2(t_data *data, int p_index)
 {
 	unsigned int	sleep_time;
 	unsigned int	x;
+	unsigned int	timestamp;
+
+	timestamp = get_timestamp(data);
 
 	print_message(data, p_index, 1);
 	data->philos[p_index]->meals_eaten++;
 	data->philos[p_index]->status = EATING;
-	data->philos[p_index]->time_to_die = get_timestamp(data) + data->time_die;
-	x = get_timestamp(data) + data->time_eat;
+	data->philos[p_index]->time_to_die = timestamp + data->time_die;
+	x = timestamp + data->time_eat;
 	if (x < data->philos[p_index]->time_to_die)
-	{
-	//	printf("here 01: %i, %i, %u\n", get_timestamp(data), data->time_die, data->philos[p_index]->time_to_die);
 		usleep(data->time_eat * 1000);
-	}
 	else
 	{
-	//	printf("here 02: %i, %i, %u\n", get_timestamp(data), data->time_eat, data->philos[p_index]->time_to_die);
-	//	printf("Will die while eating\n");
-		sleep_time = data->philos[p_index]->time_to_die - get_timestamp(data);
+		sleep_time = data->philos[p_index]->time_to_die - timestamp;
 		usleep(sleep_time * 1000);
 		p_die(data, p_index);
 	}
@@ -139,8 +138,76 @@ void	p_eat_2(t_data *data, int p_index)
 	pthread_mutex_lock(&data->philos[p_index]->r_fork->m_fork);
 	data->philos[p_index]->r_fork->locked = false;
 	pthread_mutex_unlock(&data->philos[p_index]->r_fork->m_fork);
+	data->philos[p_index]->fork_amount = 0;
 	p_sleep(data, p_index);
 }
+/*
+void	p_eat(t_data *data, int p_index)
+{
+	bool	available;
+
+	available = false;
+	if (data->philos[p_index]->l_fork->id != data->philos[p_index]->r_fork->id)
+	{
+		pthread_mutex_lock(&data->philos[p_index]->l_fork->m_fork);
+		if (data->philos[p_index]->l_fork->locked == false)
+		{
+			pthread_mutex_lock(&data->philos[p_index]->r_fork->m_fork);
+			if (data->philos[p_index]->r_fork->locked == false)
+			{
+				data->philos[p_index]->r_fork->locked = true;
+				data->philos[p_index]->l_fork->locked = true;
+				print_message(data, p_index, 0);
+				print_message(data, p_index, 0);
+				available = true;
+			}
+			pthread_mutex_unlock(&data->philos[p_index]->r_fork->m_fork);
+		}
+		pthread_mutex_unlock(&data->philos[p_index]->l_fork->m_fork);
+	}
+	if (available == true)
+	{
+	//	printf("EAT\n");
+		p_eat_2(data, p_index);
+	}
+	else
+	{
+	//	printf("THINK\n");
+		p_think(data, p_index);
+	}
+
+}
+*/
+
+/*
+void	p_eat(t_data *data, int p_index)
+{
+	if (data->philos[p_index]->l_fork->id != data->philos[p_index]->r_fork->id)
+	{
+		pthread_mutex_lock(&data->philos[p_index]->l_fork->m_fork);
+		if (data->philos[p_index]->l_fork->locked == false)
+		{
+			data->philos[p_index]->l_fork->locked = true;
+			data->philos[p_index]->fork_amount++;
+			print_message(data, p_index, 0);
+		}
+		pthread_mutex_unlock(&data->philos[p_index]->l_fork->m_fork);
+		pthread_mutex_lock(&data->philos[p_index]->r_fork->m_fork);
+		if (data->philos[p_index]->r_fork->locked == false)
+		{
+			data->philos[p_index]->r_fork->locked = true;
+			print_message(data, p_index, 0);
+			data->philos[p_index]->fork_amount++;
+		}
+		pthread_mutex_unlock(&data->philos[p_index]->r_fork->m_fork);
+	}
+	if (data->philos[p_index]->fork_amount == 2)
+		p_eat_2(data, p_index);
+	else
+		p_think(data, p_index);
+}
+*/
+
 
 void	p_eat(t_data *data, int p_index)
 {
@@ -169,6 +236,7 @@ void	p_eat(t_data *data, int p_index)
 		p_eat_2(data, p_index);
 	else
 		p_think(data, p_index);
+
 }
 
 void	*routine(void *arg)

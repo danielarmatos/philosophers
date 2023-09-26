@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:26 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/26 16:27:53 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/26 19:50:39 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	if (argc == 5 || argc == 6)
 	{
+		printf("./philo 5 800 200 200\n");
 		if (validate_input(argv) == 0)
 		{
 			printf("\033[1;31mError: Invalid input\n\033[0m");

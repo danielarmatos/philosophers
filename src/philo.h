@@ -37,6 +37,7 @@ typedef struct s_philo
 	int				id;
 	int				meals_eaten;
 	int				status;
+	int 			fork_amount;
 	unsigned int	time_to_die;
 	t_fork			*r_fork;
 	t_fork			*l_fork;
