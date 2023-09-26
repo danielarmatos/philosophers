@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 18:36:57 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/20 18:48:44 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/26 16:20:24 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,8 @@ void	init_philos(t_data *data)
 		data->philos[i]->id = i;
 		data->philos[i]->meals_eaten = 0;
 		data->philos[i]->status = 0;
-		data->philos[i]->time_to_die = data->start_time + data->time_die;
+		//data->philos[i]->time_to_die = data->start_time + data->time_die;
+		data->philos[i]->time_to_die = data->time_die;
 		i++;
 	}
 	data->philos[i] = NULL;

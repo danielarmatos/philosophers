@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:26 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/20 21:34:02 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/26 16:27:53 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,6 @@ int	main(int argc, char **argv)
 	t_data		*data;
 
 	i = 0;
-	printf("./philo 5 800 200 200\n");
 	if (argc == 5 || argc == 6)
 	{
 		if (validate_input(argv) == 0)
@@ -67,7 +66,7 @@ int	main(int argc, char **argv)
 			return (0);
 		}
 		data = malloc(sizeof(t_data));
-		data->start_time = get_timestamp();
+		data->start_time = get_start_timestamp();
 		init_data(data, argv);
 		while (i < ft_atoi(argv[1]))
 		{

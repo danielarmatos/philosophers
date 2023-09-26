@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:18 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/20 19:15:13 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/26 17:24:08 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ typedef struct s_philo
 	int				id;
 	int				meals_eaten;
 	int				status;
-	int				time_to_die;
+	unsigned int	time_to_die;
 	t_fork			*r_fork;
 	t_fork			*l_fork;
 	pthread_t		thread;
@@ -50,7 +50,7 @@ typedef struct s_data
 	int				time_eat;
 	int				time_sleep;
 	int				must_eat;
-	int				start_time;
+	unsigned long long					start_time;
 	bool			dead;
 	int				curr_id;
 	t_philo			**philos;
@@ -64,7 +64,8 @@ typedef struct s_data
 // Utils:
 int		check_if_digit(char **arr);
 int		ft_atoi(const char *str);
-int		get_timestamp();
+int		get_timestamp(t_data *data);
+unsigned long long	get_start_timestamp();
 
 // Init:
 void	init_data(t_data *data, char **argv);
