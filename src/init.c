@@ -6,54 +6,16 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 18:36:57 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/26 19:47:46 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 17:51:45 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-/*void	init_forks(t_data *data)
+static void	init_forks_2(t_data *data)
 {
 	int	i;
 
-	i = 0;
-	data->forks = malloc(sizeof(t_fork) * data->n_philo + 1);
-	while (i < data->n_philo)
-	{
-		data->forks[i] = malloc(sizeof(t_fork));
-		data->forks[i]->id = i;
-		data->forks[i]->locked = false;
-		pthread_mutex_init(&data->forks[i]->m_fork, NULL);
-		i++;
-	}
-	data->forks[i] = NULL;
-	i = 0;
-	while (i < data->n_philo)
-	{
-		data->philos[i]->l_fork = data->forks[i];
-		if (i == 0)
-			data->philos[i]->r_fork = data->forks[data->n_philo - 1];
-		else
-			data->philos[i]->r_fork = data->forks[i - 1];
-		i++;
-	}
-}*/
-
-void	init_forks(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	data->forks = malloc(sizeof(t_fork) * data->n_philo + 1);
-	while (i < data->n_philo)
-	{
-		data->forks[i] = malloc(sizeof(t_fork));
-		data->forks[i]->id = i;
-		data->forks[i]->locked = false;
-		pthread_mutex_init(&data->forks[i]->m_fork, NULL);
-		i++;
-	}
-	data->forks[i] = NULL;
 	i = 0;
 	while (i < data->n_philo)
 	{
@@ -74,6 +36,24 @@ void	init_forks(t_data *data)
 	}
 }
 
+void	init_forks(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	data->forks = malloc(sizeof(t_fork) * data->n_philo + 1);
+	while (i < data->n_philo)
+	{
+		data->forks[i] = malloc(sizeof(t_fork));
+		data->forks[i]->id = i;
+		data->forks[i]->locked = false;
+		pthread_mutex_init(&data->forks[i]->m_fork, NULL);
+		i++;
+	}
+	data->forks[i] = NULL;
+	init_forks_2(data);
+}
+
 void	init_philos(t_data *data)
 {
 	int	i;
@@ -87,7 +67,6 @@ void	init_philos(t_data *data)
 		data->philos[i]->meals_eaten = 0;
 		data->philos[i]->status = 0;
 		data->philos[i]->fork_amount = 0;
-		//data->philos[i]->time_to_die = data->start_time + data->time_die;
 		data->philos[i]->time_to_die = data->time_die;
 		i++;
 	}
@@ -103,9 +82,10 @@ void	init_data(t_data *data, char **argv)
 	data->time_sleep = ft_atoi(argv[4]);
 	data->curr_id = -1;
 	data->dead = false;
-	pthread_mutex_init(&data->m_print, NULL);
+	data->philos_full = 0;
 	pthread_mutex_init(&data->m_dead, NULL);
 	pthread_mutex_init(&data->m_curr_id, NULL);
+	pthread_mutex_init(&data->m_philos_full, NULL);
 	if (argv[5])
 		data->must_eat = ft_atoi(argv[5]);
 	else

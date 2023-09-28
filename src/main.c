@@ -6,13 +6,13 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:26 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/26 19:50:39 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 17:46:20 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	free_data(t_data *data)
+static void	free_data(t_data *data)
 {
 	int	i;
 
@@ -24,15 +24,15 @@ void	free_data(t_data *data)
 		free(data->philos[i]);
 		i++;
 	}
-	pthread_mutex_destroy(&data->m_print);
 	pthread_mutex_destroy(&data->m_dead);
 	pthread_mutex_destroy(&data->m_curr_id);
+	pthread_mutex_destroy(&data->m_philos_full);
 	free(data->philos);
 	free(data->forks);
 	free(data);
 }
 
-int	validate_input(char **argv)
+static int	validate_input(char **argv)
 {
 	int	i;
 	int	n;
@@ -52,15 +52,34 @@ int	validate_input(char **argv)
 	return (1);
 }
 
-int	main(int argc, char **argv)
+static void	philo(char **argv, t_data *data)
 {
-	int			i;
-	t_data		*data;
+	int	i;
 
 	i = 0;
+	while (i < ft_atoi(argv[1]))
+	{
+		if (pthread_create(&data->philos[i]->thread, NULL, &routine, data) \
+				!= 0)
+			break ;
+		i++;
+	}
+	i = 0;
+	while (i < ft_atoi(argv[1]))
+	{
+		if (pthread_join(data->philos[i]->thread, NULL) != 0)
+			break ;
+		i++;
+	}
+	free_data(data);
+}
+
+int	main(int argc, char **argv)
+{
+	t_data		*data;
+
 	if (argc == 5 || argc == 6)
 	{
-		printf("./philo 5 800 200 200\n");
 		if (validate_input(argv) == 0)
 		{
 			printf("\033[1;31mError: Invalid input\n\033[0m");
@@ -69,24 +88,7 @@ int	main(int argc, char **argv)
 		data = malloc(sizeof(t_data));
 		data->start_time = get_start_timestamp();
 		init_data(data, argv);
-		while (i < ft_atoi(argv[1]))
-		{
-			if (pthread_create(&data->philos[i]->thread, NULL, &routine, data) != 0)
-			{
-				printf("\033[1;31mError: Thread creation error\n\033[0m");
-				// Clear data here and destroy all mutexes
-				return (0);
-			}
-			usleep(10);
-			i++;
-		}
-		i = 0;
-		while (i < ft_atoi(argv[1]))
-		{
-			pthread_join(data->philos[i]->thread, NULL);
-			i++;
-		}
-		free_data(data);
+		philo(argv, data);
 	}
 	else
 		printf("\033[1;31mError: Wrong number of arguments\n\033[0m");

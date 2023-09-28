@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 20:00:55 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/26 16:11:27 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 17:09:57 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,28 +59,14 @@ int	check_if_digit(char **arr)
 	return (1);
 }
 
-/*
-int	get_timestamp()
-{
-	long				timestamp;
-	struct timeval	current_time;
-
-	gettimeofday(&current_time, NULL);
-	timestamp = (current_time.tv_sec * 1000000 + current_time.tv_usec);
-	//printf("timestamp: %li, %li\n", current_time.tv_sec, current_time.tv_usec);
-	printf("timestamp: %f\n", timestamp * 0.001);
-	return (timestamp * 0.001);
-}*/
-
-unsigned long long	get_start_timestamp()
+unsigned long long	get_start_timestamp(void)
 {
 	struct timeval		tv;
 	unsigned long long	milliseconds;
-	//int 				result;
 
 	gettimeofday(&tv, NULL);
-	milliseconds = (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
-	//printf("Start Timestamp in milliseconds: %llu\n", milliseconds);
+	milliseconds = ((unsigned long long)tv.tv_sec * 1000) + \
+			((unsigned long long)(tv.tv_usec) / 1000);
 	return (milliseconds);
 }
 
@@ -88,12 +74,11 @@ int	get_timestamp(t_data *data)
 {
 	struct timeval		tv;
 	unsigned long long	milliseconds;
-	int 				result;
+	int					result;
 
 	gettimeofday(&tv, NULL);
-	milliseconds = (unsigned long long)(tv.tv_sec) * 1000 + (unsigned long long)(tv.tv_usec) / 1000;
+	milliseconds = ((unsigned long long)tv.tv_sec * 1000) + \
+			((unsigned long long)tv.tv_usec / 1000);
 	result = milliseconds - data->start_time;
-	//printf("Start Timestamp in milliseconds 03: %llu\n", data->start_time);
-//	printf("Timestamp in milliseconds: %llu, %i, %llu\n", milliseconds, result, data->start_time);
 	return (result);
 }
