@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:18 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/28 17:55:49 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 19:49:38 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef struct s_philo
 	int				meals_eaten;
 	int				status;
 	int				fork_amount;
+	bool			has_r_fork;
+	bool			has_l_fork;
 	unsigned int	time_to_die;
 	t_fork			*r_fork;
 	t_fork			*l_fork;
@@ -81,5 +83,6 @@ bool				check_if_dead(t_data *data);
 void				print_message(t_data *data, int p_index, int message_id);
 void				p_die(t_data *data, int p_index);
 void				p_sleep(t_data *data, int p_index);
+void				one_p_eat(t_data *data, int p_index);
 
 #endif

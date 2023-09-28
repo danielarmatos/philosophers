@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 18:36:57 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/28 17:51:45 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 19:49:01 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,11 @@ static void	init_forks_2(t_data *data)
 	i = 0;
 	while (i < data->n_philo)
 	{
-		if (i % 2 == 0)
-		{
-			data->philos[i]->l_fork = data->forks[i];
-			if (i == 0)
-				data->philos[i]->r_fork = data->forks[data->n_philo - 1];
-			else
-				data->philos[i]->r_fork = data->forks[i - 1];
-		}
+		data->philos[i]->r_fork = data->forks[i];
+		if (i == 0)
+			data->philos[i]->l_fork = data->forks[data->n_philo - 1];
 		else
-		{
 			data->philos[i]->l_fork = data->forks[i - 1];
-			data->philos[i]->r_fork = data->forks[i];
-		}
 		i++;
 	}
 }
@@ -68,6 +60,8 @@ void	init_philos(t_data *data)
 		data->philos[i]->status = 0;
 		data->philos[i]->fork_amount = 0;
 		data->philos[i]->time_to_die = data->time_die;
+		data->philos[i]->has_l_fork = false;
+		data->philos[i]->has_r_fork = false;
 		i++;
 	}
 	data->philos[i] = NULL;

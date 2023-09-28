@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/28 17:14:19 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/28 17:50:41 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 19:56:06 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ void	print_message(t_data *data, int p_index, int message_id)
 	}
 	timestamp = (get_timestamp(data));
 	if (message_id == 0)
-		printf("%i %i has taken a fork\n", timestamp, p_index);
+		printf("%i %i has taken a fork\n", timestamp, (p_index + 1));
 	if (message_id == 1)
-		printf("%i %i is eating\n", timestamp, p_index);
+		printf("%i %i is eating\n", timestamp, (p_index + 1));
 	if (message_id == 2)
-		printf("%i %i is sleeping\n", timestamp, p_index);
+		printf("%i %i is sleeping\n", timestamp, (p_index + 1));
 	if (message_id == 3)
-		printf("%i %i is thinking\n", timestamp, p_index);
+		printf("%i %i is thinking\n", timestamp, (p_index + 1));
 	pthread_mutex_unlock(&data->m_dead);
 }
 
@@ -59,7 +59,7 @@ void	p_die(t_data *data, int p_index)
 	timestamp = get_timestamp(data);
 	data->philos[p_index]->status = DEAD;
 	data->dead = true;
-	printf("%i %i died\n", timestamp, p_index);
+	printf("%i %i died\n", timestamp, (p_index + 1));
 	pthread_mutex_unlock(&data->m_dead);
 }
 
@@ -88,4 +88,16 @@ void	p_sleep(t_data *data, int p_index)
 			}
 		}
 	}
+}
+
+void	one_p_eat(t_data *data, int p_index)
+{
+	pthread_mutex_lock(&data->philos[p_index]->l_fork->m_fork);
+	if (data->philos[p_index]->l_fork->locked == false)
+	{
+		data->philos[p_index]->l_fork->locked = true;
+		data->philos[p_index]->has_l_fork = true;
+		print_message(data, p_index, 0);
+	}
+	pthread_mutex_unlock(&data->philos[p_index]->l_fork->m_fork);
 }

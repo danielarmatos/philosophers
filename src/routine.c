@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/19 19:06:51 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/28 18:05:16 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 20:22:01 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,11 @@ static void	p_eat_3(t_data *data, int p_index)
 	data->philos[p_index]->r_fork->locked = false;
 	pthread_mutex_unlock(&data->philos[p_index]->r_fork->m_fork);
 	data->philos[p_index]->fork_amount = 0;
+	data->philos[p_index]->has_l_fork = false;
+	data->philos[p_index]->has_r_fork = false;
 	p_sleep(data, p_index);
 	p_think(data, p_index);
-	usleep(150);
+	usleep(100);
 }
 
 static void	p_eat_2(t_data *data, int p_index)
@@ -53,50 +55,54 @@ static void	p_eat_2(t_data *data, int p_index)
 	unsigned int	x;
 	unsigned int	timestamp;
 
-	timestamp = get_timestamp(data);
-	print_message(data, p_index, 1);
-	data->philos[p_index]->meals_eaten++;
-	data->philos[p_index]->status = EATING;
-	data->philos[p_index]->time_to_die = timestamp + data->time_die;
-	x = timestamp + data->time_eat;
-	if (x < data->philos[p_index]->time_to_die)
-		usleep(data->time_eat * 1000);
-	else
+	if (data->philos[p_index]->has_l_fork == true
+		&& data->philos[p_index]->has_r_fork == true)
 	{
-		sleep_time = data->philos[p_index]->time_to_die - timestamp;
-		usleep(sleep_time * 1000);
-		p_die(data, p_index);
+		timestamp = get_timestamp(data);
+		print_message(data, p_index, 1);
+		data->philos[p_index]->meals_eaten++;
+		data->philos[p_index]->status = EATING;
+		data->philos[p_index]->time_to_die = timestamp + data->time_die;
+		x = timestamp + data->time_eat;
+		if (x < data->philos[p_index]->time_to_die)
+			usleep(data->time_eat * 1000);
+		else
+		{
+			sleep_time = data->philos[p_index]->time_to_die - timestamp;
+			usleep(sleep_time * 1000);
+			p_die(data, p_index);
+		}
+		p_eat_3(data, p_index);
 	}
-	p_eat_3(data, p_index);
+	else
+		p_think(data, p_index);
 }
 
 void	p_eat(t_data *data, int p_index)
 {
-	bool	available;
-
-	available = false;
-	if (data->philos[p_index]->l_fork->id != data->philos[p_index]->r_fork->id)
+	if (data->philos[p_index]->l_fork->id == data->philos[p_index]->r_fork->id)
+		one_p_eat(data, p_index);
+	else
 	{
 		pthread_mutex_lock(&data->philos[p_index]->l_fork->m_fork);
+		pthread_mutex_lock(&data->philos[p_index]->r_fork->m_fork);
 		if (data->philos[p_index]->l_fork->locked == false)
 		{
-			pthread_mutex_lock(&data->philos[p_index]->r_fork->m_fork);
-			if (data->philos[p_index]->r_fork->locked == false)
-			{
-				data->philos[p_index]->r_fork->locked = true;
-				data->philos[p_index]->l_fork->locked = true;
-				print_message(data, p_index, 0);
-				print_message(data, p_index, 0);
-				available = true;
-			}
-			pthread_mutex_unlock(&data->philos[p_index]->r_fork->m_fork);
+			data->philos[p_index]->l_fork->locked = true;
+			data->philos[p_index]->has_l_fork = true;
+			print_message(data, p_index, 0);
+		}
+		if (data->philos[p_index]->has_l_fork == true
+			&& data->philos[p_index]->r_fork->locked == false)
+		{
+			data->philos[p_index]->r_fork->locked = true;
+			data->philos[p_index]->has_r_fork = true;
+			print_message(data, p_index, 0);
 		}
 		pthread_mutex_unlock(&data->philos[p_index]->l_fork->m_fork);
+		pthread_mutex_unlock(&data->philos[p_index]->r_fork->m_fork);
 	}
-	if (available == true)
-		p_eat_2(data, p_index);
-	else
-		p_think(data, p_index);
+	p_eat_2(data, p_index);
 }
 
 void	*routine(void *arg)

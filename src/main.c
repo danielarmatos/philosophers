@@ -6,7 +6,7 @@
 /*   By: dreis-ma <dreis-ma@student.42porto.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/16 14:59:26 by dreis-ma          #+#    #+#             */
-/*   Updated: 2023/09/28 17:46:20 by dreis-ma         ###   ########.fr       */
+/*   Updated: 2023/09/28 20:26:09 by dreis-ma         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ static void	philo(char **argv, t_data *data)
 				!= 0)
 			break ;
 		i++;
+		usleep(100);
 	}
 	i = 0;
 	while (i < ft_atoi(argv[1]))
